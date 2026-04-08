@@ -1,4 +1,4 @@
 package org.iesra
 
-class LogValidator {
+class LogValidator(log: Log) {
 }
