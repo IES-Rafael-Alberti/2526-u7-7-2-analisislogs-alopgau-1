@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class LogProcessor {
-    fun process(logs: Array<String>) {
+    fun process(logs: List<String>) {
     logs.map {
         log ->
         val bracketsInfo = log.substringBefore("]").substringAfter("[")
