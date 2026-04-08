@@ -1,4 +1,4 @@
 package org.iesra
 
-class ConsoleOutput {
+class ConsoleOutput() {
 }
