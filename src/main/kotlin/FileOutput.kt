@@ -1,4 +1,8 @@
 package org.iesra
 
-class FileOutput {
+import java.io.File
+
+class FileOutput(val file: File): OutputMethod {
+    override fun output(report: String) = file.writeText(report)
+
 }
