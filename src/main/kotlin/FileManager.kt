@@ -1,6 +1,6 @@
 package org.iesra
 import java.io.File
-class FileManager(path: String) {
+class FileManager() {
     fun process(path: String): List<String> {
         if (pathIsValid(path)) {
             val f = File(path)
@@ -9,7 +9,7 @@ class FileManager(path: String) {
         return emptyList()
     }
     private fun read(file: File) = file.readLines()
-    private fun pathIsValid(path: String): Boolean {
+    fun pathIsValid(path: String): Boolean {
         val f = File(path)
     return f.exists() && f.isFile && f.canWrite()
     }
