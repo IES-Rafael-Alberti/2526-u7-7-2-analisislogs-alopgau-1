@@ -15,7 +15,7 @@ val configParams = mutableMapOf<String,ConfigStatus>(
     val configValues = mutableMapOf<String, Array<String?>>(
         "fromDate" to arrayOf(null),
         "toDate" to arrayOf(null),
-        "level" to arrayOf(null,null,null),
+        "levelFilter" to arrayOf(null,null,null),
         "fileOutput" to arrayOf(null)
 
     )
@@ -61,8 +61,16 @@ fun validateConfig() = minLength() && basicStructureChecker()
     }
 }
     private fun validatePath(idx: Int): Boolean {
-        if (idx < args.size-1)
-        return File(args[idx+1]).exists() && File(args[idx+1]).canWrite() else return false
+        if (idx < args.size-1) {
+        if (File(args[idx+1]).exists() && File(args[idx+1]).canWrite()) {
+            configValues["fileOutput"]?.set(0,args[idx+1])
+            return true
+        } else {
+            return false
+        }
+
+        }
+            return false
     }
     private fun validateDate(idx: Int, typeDate: String): Boolean {
         if (idx < args.size-1) {
@@ -80,10 +88,15 @@ fun validateConfig() = minLength() && basicStructureChecker()
     private fun validateLevels(idx: Int): Boolean {
         if ("," in args && idx < args.size-1) {
         val levels = args[idx+1].split(",")
-        if (checkLevel(levels[0]) && checkLevel(levels[1])) return true else return false
+        if (levels.all { level -> checkLevel(level) }) {
+            levels.forEachIndexed { index, level ->
+                configValues["filterValues"]?.set(index,level)
+            }
+        }
         } else {
             return false
         }
+        return false
     }
     private fun checkLevel(level: String): Boolean {
         try {
