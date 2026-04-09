@@ -1,12 +1,24 @@
 package org.iesra
 
-class LogValidator(private val logs: List<String>) {
-
-    fun validateAll(): Pair<List<String>, List<String>> {
-        val (valid,nonvalid) = logs.partition {log -> bracketsExist(log) && insideBracketsChecker(log) && afterBracketsChecker(log)}
+class LogValidator(private val ignoreMode: Boolean, private val logs: List<String>) {
+     fun scan(): Pair<List<String>, List<String>> {
+        if (!ignoreMode) {
+         val (valid,nonvalid) = logs.partition {log -> bracketsExist(log) && insideBracketsChecker(log) && afterBracketsChecker(log)}
         return Pair(valid,nonvalid)
+        } else {
+            var i = 0
+            val valid = mutableListOf<String>()
+            while (bracketsExist(logs[i]) && insideBracketsChecker(logs[i]) && afterBracketsChecker(logs[i])) {
+                valid.add(logs[i])
+                i++
+            }
+            return Pair(valid,emptyList())
 
         }
+
+
+        }
+
     }
     private fun bracketsExist(log:String) =
         log.substringBefore(']', "").isNotEmpty() && log.substringAfter(']',"").isNotEmpty()
@@ -27,4 +39,5 @@ class LogValidator(private val logs: List<String>) {
         }
         return true
     }
+
 
