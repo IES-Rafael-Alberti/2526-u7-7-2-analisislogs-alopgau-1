@@ -1,7 +1,7 @@
 package org.iesra
 import java.io.File
-class argsValidator(val args: Array<String>) {
-val configParams = mutableMapOf<String,ConfigStatus>(
+class argsValidator(private val args: Array<String>) {
+private val configParams = mutableMapOf<String,ConfigStatus>(
     "fromDate" to ConfigStatus.INACTIVE,
     "toDate" to ConfigStatus.INACTIVE,
     "ignore" to ConfigStatus.INACTIVE,
@@ -12,14 +12,23 @@ val configParams = mutableMapOf<String,ConfigStatus>(
     "consoleOutput" to ConfigStatus.INACTIVE,
     "showHelp" to ConfigStatus.INACTIVE,
 )
-    val configValues = mutableMapOf<String, Array<String?>>(
+    private val configValues = mutableMapOf<String, Array<String?>>(
         "fromDate" to arrayOf(null),
         "toDate" to arrayOf(null),
         "levelFilter" to arrayOf(null,null,null),
         "fileOutput" to arrayOf(null)
 
     )
-fun validateConfig() = minLength() && basicStructureChecker()
+    fun returnConfig(): Pair<MutableMap<String, ConfigStatus>, MutableMap<String, Array<String?>>>? =
+        if (validate()) return Pair(configParams,configValues) else return null
+    private fun validate(): Boolean {
+        if (minLength() && basicStructureChecker()) {
+            optionChecker()
+            return configParams.values.any { it == ConfigStatus.ERROR }
+        } else {
+            return false
+        }
+    }
     private fun minLength() = args.size >= 3
     private fun basicStructureChecker() = args[0] == "logtool" && args[1] == "-i"
     private fun optionChecker() {
