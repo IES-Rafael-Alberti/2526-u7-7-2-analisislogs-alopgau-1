@@ -1,5 +1,5 @@
 package org.iesra
-import java.time.LocalDate
+import java.time.LocalDateTime
 
-class Log(val dateTime: LocalDate, val level: LogLevel, val message: String) {
+class Log(val dateTime: LocalDateTime, val level: LogLevel, val message: String) {
 }

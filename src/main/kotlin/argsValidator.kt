@@ -1,42 +1,96 @@
 package org.iesra
-
+import java.io.File
 class argsValidator(val args: Array<String>) {
-val configParams = mapOf<String, ConfigStatus>(
+val configParams = mutableMapOf<String,ConfigStatus>(
     "fromDate" to ConfigStatus.INACTIVE,
     "toDate" to ConfigStatus.INACTIVE,
     "ignore" to ConfigStatus.INACTIVE,
     "levelFilter" to ConfigStatus.INACTIVE,
     "showStats" to ConfigStatus.INACTIVE,
-    "FileOutputChosen" to ConfigStatus.INACTIVE,
-    "showHelp" to ConfigStatus.INACTIVE
+    "showReport" to ConfigStatus.INACTIVE,
+    "fileOutput" to ConfigStatus.INACTIVE,
+    "consoleOutput" to ConfigStatus.INACTIVE,
+    "showHelp" to ConfigStatus.INACTIVE,
 )
+    val configValues = mutableMapOf<String, Array<String?>>(
+        "fromDate" to arrayOf(null),
+        "toDate" to arrayOf(null),
+        "level" to arrayOf(null,null,null),
+        "fileOutput" to arrayOf(null)
+
+    )
 fun validateConfig() = minLength() && basicStructureChecker()
     private fun minLength() = args.size >= 3
     private fun basicStructureChecker() = args[0] == "logtool" && args[1] == "-i"
-    private fun optionChecker(): Boolean {
+    private fun optionChecker() {
         if (args.size > 3) {
-            var counter = 0
+            var idx = 0
             args.forEach {
-             flag ->
+             arg ->
             when {
-              flag == "-f" || flag =="--from" -> {
-                  if ((!validateDate(counter))) configParams["fromDate"] = ConfigStatus.ERROR else configParams["fromDate"] =
+              arg == "-f" || arg =="--from" -> {
+                  if ((!validateDate(idx, "fromDate"))) configParams["fromDate"] = ConfigStatus.ERROR else configParams["fromDate"] =
                       ConfigStatus.ACTIVE
               }
-              flag == "-t" || flag == "--to" -> {
-                  if (!validateDate(counter)) configParams["toDate"] = ConfigStatus.ERROR
+              arg == "-t" || arg == "--to" -> {
+                  if (!validateDate(idx, "toDate")) configParams["toDate"] = ConfigStatus.ERROR else configParams["toDate"] =
+                      ConfigStatus.ACTIVE
               }
+                arg == "-l" || arg == "--level" -> {
+                if (!validateLevels(idx)) configParams["levelFilter"] = ConfigStatus.ERROR else configParams["levelFilter"] =
+                    ConfigStatus.ACTIVE
+                }
+                arg == "-s" || arg == "--stats" -> configParams["showStats"] = ConfigStatus.ACTIVE
 
+                arg == "-r" || arg == "--report" -> configParams["showReport"] = ConfigStatus.ACTIVE
+
+                arg == "-o" || arg == "--output" -> {
+                    if (!validatePath(idx)) configParams["fileOutput"] = ConfigStatus.ERROR else configParams["fileOutput"] =
+                        ConfigStatus.ACTIVE
+                }
+                arg == "--ignore-invalid" -> {
+                configParams["ignore"] = ConfigStatus.ACTIVE
+                }
+                arg == "-h" || arg == "--help" -> {
+                    configParams["showHelp"] = ConfigStatus.ACTIVE
+                }
             }
-                counter++
+                idx++
             }
 
     }
 }
-    private fun validateDate(counter: Int): Boolean {
-        if (counter < args.size-1) {
+    private fun validatePath(idx: Int): Boolean {
+        if (idx < args.size-1)
+        return File(args[idx+1]).exists() && File(args[idx+1]).canWrite() else return false
+    }
+    private fun validateDate(idx: Int, typeDate: String): Boolean {
+        if (idx < args.size-1) {
             val regex = "([0-9]{4})-(0[1-9]|1[0-2])-([012][0-9]|3[01]) ([01][0-9]|2[0-3]):[0-5][0-9]".toRegex()
-            return regex.matches(args[counter+1])
+            if (regex.matches(args[idx+1])) {
+                configValues[typeDate]?.set(0, args[idx+1])
+                return true
+            }
+        } else {
+            return false
         }
+        return false
+
+    }
+    private fun validateLevels(idx: Int): Boolean {
+        if ("," in args && idx < args.size-1) {
+        val levels = args[idx+1].split(",")
+        if (checkLevel(levels[0]) && checkLevel(levels[1])) return true else return false
+        } else {
+            return false
+        }
+    }
+    private fun checkLevel(level: String): Boolean {
+        try {
+            LogLevel.valueOf(level)
+        } catch (e: IllegalArgumentException) {
+            return false
+        }
+        return true
     }
 }

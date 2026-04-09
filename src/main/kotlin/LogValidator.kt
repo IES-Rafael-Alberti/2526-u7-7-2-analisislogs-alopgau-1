@@ -17,7 +17,7 @@ class LogValidator() {
         val info = log.substringAfter(']').split(" ")
         return info.drop(1).joinToString(" ").isNotEmpty() && checkLevel(info[0])
     }
-    private fun checkLevel(level: String): Boolean {
+     private fun checkLevel(level: String): Boolean {
         try {
             LogLevel.valueOf(level)
         } catch (e: IllegalArgumentException) {

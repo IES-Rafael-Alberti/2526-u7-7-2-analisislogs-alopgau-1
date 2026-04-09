@@ -12,7 +12,7 @@ class LogProcessor {
         val level = LogLevel.valueOf(afterBracketsInfo[0])
         val message = afterBracketsInfo.drop(1).joinToString( " ")
         val formatter = DateTimeFormatter.ofPattern("yyyy-mm-dd hh:mm:ss")
-        val dateTime = LocalDate.parse(bracketsInfo,formatter)
+        val dateTime = LocalDateTime.parse(bracketsInfo,formatter)
         Log(dateTime,level,message)
     }
     }
