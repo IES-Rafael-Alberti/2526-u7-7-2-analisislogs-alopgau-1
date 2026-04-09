@@ -19,8 +19,8 @@ private val configParams = mutableMapOf<String,ConfigStatus>(
         "fileOutput" to arrayOf(null)
 
     )
-    fun returnResults(): Pair<MutableMap<String, ConfigStatus>, MutableMap<String, Array<String?>>>? =
-        if (validate()) return Pair(configParams,configValues) else return null
+    fun returnResults(): Pair<MutableMap<String, ConfigStatus>, MutableMap<String, Array<String?>>> =
+        if (validate()) return Pair(configParams,configValues) else throw IllegalArgumentException("Se introdujo algún argumento inválido")
     private fun validate(): Boolean {
         if (minLength() && basicStructureChecker()) {
             optionChecker()
