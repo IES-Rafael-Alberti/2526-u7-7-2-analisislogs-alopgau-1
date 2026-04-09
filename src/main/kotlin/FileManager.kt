@@ -1,7 +1,7 @@
 package org.iesra
 import java.io.File
-class FileManager(private val path: String) {
-    fun process(): List<String> {
+class FileManager() {
+    fun process(path: String): List<String> {
         if (pathIsValid(path)) {
             val f = File(path)
             return read(f)
