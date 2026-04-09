@@ -1,6 +1,6 @@
 package org.iesra
 
-class LogValidator() {
+class LogValidator(ignore: Boolean) {
     fun validate(logs: List<String>): Pair<List<String>, List<String>> {
 
         val (valid,nonvalid) = logs.partition {log -> bracketsExist(log) && insideBracketsChecker(log) && afterBracketsChecker(log)}
