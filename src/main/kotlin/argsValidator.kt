@@ -19,7 +19,7 @@ private val configParams = mutableMapOf<String,ConfigStatus>(
         "fileOutput" to arrayOf(null)
 
     )
-    fun returnConfig(): Pair<MutableMap<String, ConfigStatus>, MutableMap<String, Array<String?>>>? =
+    fun returnResults(): Pair<MutableMap<String, ConfigStatus>, MutableMap<String, Array<String?>>>? =
         if (validate()) return Pair(configParams,configValues) else return null
     private fun validate(): Boolean {
         if (minLength() && basicStructureChecker()) {
