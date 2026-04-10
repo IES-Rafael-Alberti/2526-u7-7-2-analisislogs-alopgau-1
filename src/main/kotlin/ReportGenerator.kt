@@ -1,11 +1,11 @@
 package org.iesra
 import java.time.LocalDateTime
 
-class ReportGenerator(): InfoGenerator {
-    override fun generate(
+class ReportGenerator(private val reportMode: Boolean, val logs: List<Log>) {
+    fun generate(
         fileName: String,
-        fromDate: String,
-        toDate: String,
+        fromDate: LocalDateTime?,
+        toDate: LocalDateTime?,
         levelsIncluded: List<LogLevel>,
         processedLines: Int,
         validLines: Int,
@@ -13,6 +13,7 @@ class ReportGenerator(): InfoGenerator {
         levelsCounted: Map<LogLevel, Int>,
         firstDate: LocalDateTime,
         lastDate: LocalDateTime
+
     )  = buildString {
         appendLine("INFORME DE LOGS")
         appendLine("===============")
@@ -33,5 +34,9 @@ class ReportGenerator(): InfoGenerator {
         appendLine("Periodo detectado en los logs:")
         appendLine("- Primera entrada: ${firstDate}")
         appendLine("- Última entrada: ${lastDate}")
+        if (reportMode) {
+            appendLine("Entradas encontradas:")
+            logs.forEach { println(it) }
+        }
     }
 }

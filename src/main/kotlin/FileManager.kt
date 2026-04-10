@@ -9,7 +9,7 @@ class FileManager() {
         return emptyList()
     }
     private fun read(file: File) = file.readLines()
-    fun pathIsValid(path: String): Boolean {
+    private fun pathIsValid(path: String): Boolean {
         val f = File(path)
     return f.exists() && f.isFile && f.canWrite()
     }

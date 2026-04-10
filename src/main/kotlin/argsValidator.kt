@@ -24,7 +24,7 @@ private val configParams = mutableMapOf<String,ConfigStatus>(
     private fun validate(): Boolean {
         if (minLength() && basicStructureChecker()) {
             optionChecker()
-            return configParams.values.any { it == ConfigStatus.ERROR }
+            return configParams.values.all { it != ConfigStatus.ERROR } && !(configParams["showStats"] == ConfigStatus.ACTIVE && configParams["showReport"] == ConfigStatus.ACTIVE) && !(configParams["consoleOutput"] == ConfigStatus.ACTIVE && configParams["fileOutput"] == ConfigStatus.ACTIVE)
         } else {
             return false
         }
