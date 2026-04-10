@@ -1,8 +1,8 @@
 package org.iesra
 import java.time.LocalDateTime
 
-class ReportGenerator() {
-    fun generate(
+class ReportGenerator(): InfoGenerator {
+    override fun generate(
         fileName: String,
         fromDate: String,
         toDate: String,
@@ -13,7 +13,7 @@ class ReportGenerator() {
         levelsCounted: Map<LogLevel, Int>,
         firstDate: LocalDateTime,
         lastDate: LocalDateTime
-    ) = buildString {
+    )  = buildString {
         appendLine("INFORME DE LOGS")
         appendLine("===============")
         appendLine("Fichero analizado: ${fileName}")

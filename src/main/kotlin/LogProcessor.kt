@@ -4,8 +4,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class LogProcessor {
-    fun process(logs: List<String>) {
-    logs.map {
+    fun process(logs: List<String>): List<Log> {
+    val logList = logs.map {
         log ->
         val bracketsInfo = log.substringBefore("]").substringAfter("[")
         val afterBracketsInfo = log.substringAfter("]").split(" ")
@@ -15,5 +15,6 @@ class LogProcessor {
         val dateTime = LocalDateTime.parse(bracketsInfo,formatter)
         Log(dateTime,level,message)
     }
+        return logList
     }
 }

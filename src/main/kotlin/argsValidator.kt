@@ -30,11 +30,11 @@ private val configParams = mutableMapOf<String,ConfigStatus>(
         }
     }
     private fun minLength() = args.size >= 3
-    private fun basicStructureChecker() = args[0] == "logtool" && args[1] == "-i"
+    private fun basicStructureChecker() = args[0] == "logtool" && args[1] == "-i" && validatePath(2)
     private fun optionChecker() {
         if (args.size > 3) {
             var idx = 0
-            args.forEach {
+            args.drop(3).forEach {
              arg ->
             when {
               arg == "-f" || arg =="--from" -> {
