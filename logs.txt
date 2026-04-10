@@ -1,0 +1,6 @@
+[2025-01-15 08:00:00] INFO Aplicación iniciada
+[2025-01-15 08:00:03] INFO Cargando configuración
+[2025-01-15 08:00:05] WARNING Archivo de configuración secundario no encontrado
+[2025-01-15 08:00:10] ERROR Error de conexión a base de datos
+[2025-01-15 08:00:15] INFO Reintentando conexión
+[2026-01-15 08:00:20] INFO Conexión restaurada
