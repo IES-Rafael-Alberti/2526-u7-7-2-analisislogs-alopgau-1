@@ -24,29 +24,31 @@ private val configParams = mutableMapOf<String,ConfigStatus>(
     private fun validate(): Boolean {
         if (minLength() && basicStructureChecker()) {
             optionChecker()
-            return configParams.values.all { it != ConfigStatus.ERROR } && !(configParams["showStats"] == ConfigStatus.ACTIVE && configParams["showReport"] == ConfigStatus.ACTIVE) && !(configParams["consoleOutput"] == ConfigStatus.ACTIVE && configParams["fileOutput"] == ConfigStatus.ACTIVE)
+            return configParams.values.all { it != ConfigStatus.ERROR } && !(configParams["showStats"] == ConfigStatus.ACTIVE && configParams["showReport"] == ConfigStatus.ACTIVE) && !(configParams["consoleOutput"] == ConfigStatus.ACTIVE && configParams["fileOutput"] == ConfigStatus.ACTIVE) && !(configParams["consoleOutput"] == ConfigStatus.INACTIVE && configParams["fileOutput"] == ConfigStatus.INACTIVE)
         } else {
             return false
         }
     }
     private fun minLength() = args.size >= 3
-    private fun basicStructureChecker() = args[0] == "logtool" && args[1] == "-i" && validatePath(2)
+    private fun basicStructureChecker() = args[0] == "logtool" && args[1] == "-i" && validatePath(1,args.toList())
     private fun optionChecker() {
         if (args.size > 3) {
             var idx = 0
-            args.drop(3).forEach {
+            val argsRemaining = args.drop(3)
+            argsRemaining.forEach {
+
              arg ->
             when {
               arg == "-f" || arg =="--from" -> {
-                  if ((!validateDate(idx, "fromDate"))) configParams["fromDate"] = ConfigStatus.ERROR else configParams["fromDate"] =
+                  if ((!validateDate(idx, "fromDate",argsRemaining))) configParams["fromDate"] = ConfigStatus.ERROR else configParams["fromDate"] =
                       ConfigStatus.ACTIVE
               }
               arg == "-t" || arg == "--to" -> {
-                  if (!validateDate(idx, "toDate")) configParams["toDate"] = ConfigStatus.ERROR else configParams["toDate"] =
+                  if (!validateDate(idx, "toDate",argsRemaining)) configParams["toDate"] = ConfigStatus.ERROR else configParams["toDate"] =
                       ConfigStatus.ACTIVE
               }
                 arg == "-l" || arg == "--level" -> {
-                if (!validateLevels(idx)) configParams["levelFilter"] = ConfigStatus.ERROR else configParams["levelFilter"] =
+                if (!validateLevels(idx,argsRemaining)) configParams["levelFilter"] = ConfigStatus.ERROR else configParams["levelFilter"] =
                     ConfigStatus.ACTIVE
                 }
                 arg == "-s" || arg == "--stats" -> configParams["showStats"] = ConfigStatus.ACTIVE
@@ -54,9 +56,10 @@ private val configParams = mutableMapOf<String,ConfigStatus>(
                 arg == "-r" || arg == "--report" -> configParams["showReport"] = ConfigStatus.ACTIVE
 
                 arg == "-o" || arg == "--output" -> {
-                    if (!validatePath(idx)) configParams["fileOutput"] = ConfigStatus.ERROR else configParams["fileOutput"] =
+                    if (!validatePath(idx,argsRemaining)) configParams["fileOutput"] = ConfigStatus.ERROR else configParams["fileOutput"] =
                         ConfigStatus.ACTIVE
                 }
+                arg == "-p" || arg == "--stdout" -> configParams["consoleOutput"] = ConfigStatus.ACTIVE
                 arg == "--ignore-invalid" -> {
                 configParams["ignore"] = ConfigStatus.ACTIVE
                 }
@@ -66,13 +69,13 @@ private val configParams = mutableMapOf<String,ConfigStatus>(
             }
                 idx++
             }
+            }
 
     }
-}
-    private fun validatePath(idx: Int): Boolean {
-        if (idx < args.size-1) {
-        if (File(args[idx+1]).exists() && File(args[idx+1]).canWrite()) {
-            configValues["fileOutput"]?.set(0,args[idx+1])
+    private fun validatePath(idx: Int,argsRemaining: List<String> ): Boolean {
+        if (idx < argsRemaining.size-1) {
+        if (File(argsRemaining[idx+1]).exists() && File(argsRemaining[idx+1]).canWrite()) {
+            configValues["fileOutput"]?.set(0,argsRemaining[idx+1])
             return true
         } else {
             return false
@@ -81,11 +84,12 @@ private val configParams = mutableMapOf<String,ConfigStatus>(
         }
             return false
     }
-    private fun validateDate(idx: Int, typeDate: String): Boolean {
-        if (idx < args.size-1) {
-            val regex = "([0-9]{4})-(0[1-9]|1[0-2])-([012][0-9]|3[01]) ([01][0-9]|2[0-3]):[0-5][0-9]".toRegex()
-            if (regex.matches(args[idx+1])) {
-                configValues[typeDate]?.set(0, args[idx+1])
+    private fun validateDate(idx: Int, typeDate: String, argsRemaining: List<String>): Boolean {
+        if (idx < argsRemaining.size-2) {
+            val regex = "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$".toRegex()
+            val datetime = listOf(argsRemaining[idx+1], argsRemaining[idx+2]).joinToString(" ")
+            if (regex.matches(datetime)) {
+                configValues[typeDate]?.set(0, datetime)
                 return true
             }
         } else {
@@ -94,12 +98,13 @@ private val configParams = mutableMapOf<String,ConfigStatus>(
         return false
 
     }
-    private fun validateLevels(idx: Int): Boolean {
-        if ("," in args && idx < args.size-1) {
-        val levels = args[idx+1].split(",")
+    private fun validateLevels(idx: Int, argsRemaining: List<String>): Boolean {
+        if ("," in argsRemaining[idx+1] && idx < argsRemaining.size-1) {
+        val levels = argsRemaining[idx+1].split(",")
         if (levels.all { level -> checkLevel(level) }) {
             levels.forEachIndexed { index, level ->
-                configValues["filterValues"]?.set(index,level)
+                configValues["levelFilter"]?.set(index,level)
+                return true
             }
         }
         } else {
@@ -116,3 +121,4 @@ private val configParams = mutableMapOf<String,ConfigStatus>(
         return true
     }
 }
+

@@ -36,7 +36,7 @@ class ReportGenerator(private val reportMode: Boolean, val logs: List<Log>) {
         appendLine("- Última entrada: ${lastDate}")
         if (reportMode) {
             appendLine("Entradas encontradas:")
-            logs.forEach { println(it) }
+            logs.forEach { appendLine(it) }
         }
     }
 }
